@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jerick Mendez • CMSC307 Portfolio</title>
+  <meta name="description" content="CMSC307 portfolio with résumé and projects." />
+  <style>
+    /* --- Café Palette (warm browns & cream) --- */
+    :root{
+      --paper:#faf6f1; --mist:#f0e9e3; --panel:#ffffff;
+      --coffee:#8B5E3C; --coffee-dark:#5C4033;
+      --ink:#2d2017; --muted:#7a6a5f;
+      --ring: rgba(139,94,60,.35);
+      --shadow:0 12px 28px rgba(0,0,0,.12);
+      --radius:18px; --max:1080px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%}
+    body{
+      font:16px/1.65 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--ink);
+      background:
+        radial-gradient(1200px 600px at 12% -10%, var(--mist) 0, transparent 55%),
+        radial-gradient(1000px 500px at 120% 0%, #ede3da 0, transparent 55%),
+        linear-gradient(180deg, var(--mist), var(--paper));
+      background-attachment: fixed;
+      scroll-behavior:smooth;
+    }
+    a{color:var(--coffee-dark); text-decoration:none}
+    a:hover{text-decoration:underline}
+    .wrap{max-width:var(--max); margin:0 auto; padding:20px}
+
+    /* Hero with subtle blobs */
+    header{
+      position:relative; overflow:hidden;
+      padding:64px 26px 72px; border-radius: calc(var(--radius)+8px);
+      background: linear-gradient(180deg, #fff, #f7f2ec);
+      outline:1px solid rgba(0,0,0,.06); box-shadow:var(--shadow);
+      --b1:#f4ebe3; --b2:#efe4da; --b3:#fbf5f0;
+    }
+    .blob{position:absolute; border-radius:50%; filter:blur(26px); opacity:.6; animation:float 20s ease-in-out infinite}
+    .b1{width:360px;height:360px;background:var(--b1); top:-120px; left:-80px}
+    .b2{width:300px;height:300px;background:var(--b2); top:-80px; right:-60px; animation-duration:25s}
+    .b3{width:260px;height:260px;background:var(--b3); bottom:-120px; left:20%; animation-duration:30s}
+    @keyframes float{0%,100%{transform:translateY(0) translateX(0)} 50%{transform:translateY(16px) translateX(8px)}}
+
+    h1{margin:0 0 6px; font-size: clamp(28px,4.4vw,46px); position:relative}
+    .sub{margin:8px 0 14px; color:var(--muted); position:relative}
+    .badge{position:relative; display:inline-block; padding:6px 10px; border-radius:999px; font-weight:600;
+      background:#fff7f1; border:1px solid var(--ring); color:#5C4033}
+    .nav{display:flex; gap:16px; margin-top:14px; flex-wrap:wrap; position:relative}
+    .nav a{font-weight:600; color:#8B5E3C}
+    .nav a:hover{color:var(--ink)}
+    .cta{position:relative; display:inline-block; margin-top:16px; padding:12px 18px; font-weight:700;
+      color:#fff; border-radius:14px; border:0; background:linear-gradient(180deg,var(--coffee),var(--coffee-dark));
+      box-shadow:0 10px 18px rgba(92,64,51,.28); transition:transform .06s ease}
+    .cta:hover{transform:translateY(-1px)}
+
+    /* Sections */
+    section{margin-top:28px}
+    .card{background:var(--panel); border-radius:var(--radius); padding:22px;
+      outline:1px solid rgba(0,0,0,.06); box-shadow:var(--shadow);
+      opacity:0; transform:translateY(12px); transition:opacity .6s ease, transform .6s ease}
+    .card.revealed{opacity:1; transform:none}
+    h2{margin:0 0 12px; font-size: clamp(20px,3.2vw,28px)}
+    .muted{color:var(--muted)}
+    .grid{display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+    .tile{background:linear-gradient(180deg,#fff,#faf6f1); border-radius:14px; padding:16px;
+      outline:1px solid rgba(0,0,0,.06); transition:transform .08s ease, outline-color .2s ease, box-shadow .2s ease}
+    .tile:hover{transform:translateY(-2px); outline-color:var(--ring); box-shadow:0 10px 22px rgba(0,0,0,.08)}
+
+    /* Resume image */
+    .resume-wrap{display:grid; gap:14px}
+    .resume{width:100%; max-width:780px; border-radius:12px; outline:1px solid rgba(0,0,0,.08);
+      box-shadow:0 10px 22px rgba(0,0,0,.08); cursor:zoom-in}
+    .actions a{display:inline-block; padding:10px 14px; border-radius:10px; font-weight:600; color:#fff;
+      background:linear-gradient(180deg,var(--coffee),var(--coffee-dark)); margin-right:8px}
+
+    /* Lightbox */
+    .lightbox{position:fixed; inset:0; background:rgba(0,0,0,.7); display:none; place-items:center; z-index:50}
+    .lightbox img{max-width:min(1200px,90vw); max-height:90vh; border-radius:12px}
+    .lightbox.show{display:grid}
+
+    /* Chips */
+    .chips{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px}
+    .chip{padding:6px 10px; border-radius:999px; border:1px solid rgba(0,0,0,.12);
+      background:#fdf8f4; color:#5C4033; font-weight:600; cursor:pointer; user-select:none}
+    .chip.active{background:linear-gradient(180deg,var(--coffee),var(--coffee-dark)); color:#fff; border-color:transparent}
+
+    /* Back to top & toast */
+    #toTop{position:fixed; right:18px; bottom:18px; border:0; border-radius:50%; width:44px; height:44px;
+      background:linear-gradient(180deg,var(--coffee),var(--coffee-dark)); color:#fff; display:none; place-items:center; font-size:20px}
+    .toast{position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px);
+      background:#3d2a20; color:#fff; padding:10px 14px; border-radius:999px; box-shadow:0 14px 30px rgba(0,0,0,.25);
+      opacity:0; transition:opacity .25s ease, transform .25s ease}
+    .toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+      <span class="badge">CMSC307 • Portfolio</span>
+      <h1>Hi, I’m <strong>Jerick Mendez</strong></h1>
+      <p class="sub">BS Computer Science • Section 3A • AY 2025–2026</p>
+      <div class="nav">
+        <a href="#repo">Repository</a><a href="#resume">Résumé</a><a href="#projects">Projects</a><a href="#contact">Contact</a>
+        <a href="https://github.com/mendezjerick" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+      <a class="cta" href="#repo">View CMSC307 work</a>
+    </header>
+
+    <section id="repo" class="card">
+      <h2>Course Repository</h2>
+      <div class="grid">
+        <a class="tile" href="https://github.com/mendezjerick/CMSC307-3A-AY25-26" target="_blank" rel="noopener">
+          <h3>CMSC307-3A-AY25-26</h3>
+          <p class="muted">Assignments, exercises, and projects for CMSC307.</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- Résumé -->
+    <section id="resume" class="card">
+      <h2>Résumé</h2>
+      <div class="resume-wrap">
+        <img class="resume" id="resumeImg" src="assets/resume.png" alt="Résumé of Jerick Mendez (PNG)">
+        <div class="actions">
+          <a href="assets/resume.png" download>Download PNG</a>
+          <a href="assets/resume.png" target="_blank" rel="noopener">Open full size ↗</a>
+        </div>
+        <p class="muted">Click the résumé to zoom. File path used: <code>assets/resume.png</code></p>
+      </div>
+    </section>
+
+    <!-- Projects -->
+    <section id="projects" class="card">
+      <h2>Projects</h2>
+      <div class="chips">
+        <button class="chip active" data-filter="all">All</button>
+        <button class="chip" data-filter="CMSC307">CMSC307</button>
+      </div>
+      <div id="projectGrid" class="grid"></div>
+      <p id="emptyMsg" class="muted" style="display:none">Empty for now. Add files in <code>projects/</code> later.</p>
+      <p class="muted" style="margin-top:10px">Folder link: <a href="projects/">open <strong>projects/</strong></a></p>
+    </section>
+
+    <section id="contact" class="card">
+      <h2>Contact</h2>
+      <p class="muted">Email: <a href="mailto:youremail@example.com">youremail@example.com</a> •
+        Profile: <a href="https://github.com/mendezjerick" target="_blank" rel="noopener">github.com/mendezjerick</a></p>
+    </section>
+
+    <footer class="muted" style="text-align:center; padding:30px 0 46px">© 2025 Jerick Mendez</footer>
+  </div>
+
+  <!-- Back to top, lightbox, toast -->
+  <button id="toTop" aria-label="Back to top">↑</button>
+  <div id="lightbox" class="lightbox"><img alt="Zoomed résumé"></div>
+  <div id="toast" class="toast">Filter applied</div>
+
+  <script>
+    const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('revealed');io.unobserve(e.target)}}),{threshold:.08});
+    document.querySelectorAll('.card').forEach(c=>io.observe(c));
+
+    const toTop=document.getElementById('toTop');
+    addEventListener('scroll',()=>toTop.style.display=scrollY>400?'grid':'none');
+    toTop.addEventListener('click',()=>scrollTo({top:0,behavior:'smooth'}));
+
+    const box=document.getElementById('lightbox'), img=document.getElementById('resumeImg');
+    img?.addEventListener('click',()=>{box.querySelector('img').src=img.src; box.classList.add('show')});
+    box.addEventListener('click',()=>box.classList.remove('show'));
+
+    const projects=[]; 
+    const grid=document.getElementById('projectGrid'), empty=document.getElementById('emptyMsg');
+    function render(f='all'){
+      grid.innerHTML='';
+      const items=projects.filter(p=>f==='all'||(p.tags||[]).includes(f));
+      empty.style.display=items.length? 'none':'block';
+      items.forEach(p=>{
+        const a=document.createElement('a');
+        a.className='tile'; a.href=p.href; a.target='_blank'; a.rel='noopener';
+        a.innerHTML=`<h3>${p.title}</h3><p class="muted">${p.desc||''}</p>`;
+        grid.appendChild(a);
+      });
+    }
+    render();
+
+    const chips=document.querySelectorAll('.chip'), toast=document.getElementById('toast');
+    chips.forEach(ch=>ch.addEventListener('click',()=>{
+      chips.forEach(x=>x.classList.remove('active')); ch.classList.add('active');
+      const f=ch.dataset.filter; render(f);
+      toast.textContent=(f==='all'?'Showing all projects':`Showing ${f}`); 
+      toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),1200);
+    }));
+  </script>
+</body>
+</html>
